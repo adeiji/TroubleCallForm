@@ -7,8 +7,8 @@
 //
 
 #import "AppDelegate.h"
-
 #import "MasterViewController.h"
+#import <DropboxSDK/DropboxSDK.h>
 
 @implementation AppDelegate
 
@@ -19,6 +19,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    DBSession *dbSession = [[DBSession alloc] initWithAppKey:@"snud2bq43a0avwn" appSecret:@"k4542x6qlrhw1bh" root:kDBRootAppFolder];
+    [DBSession setSharedSession:dbSession];
+    //RKClient *client = [RKClient clientWithBaseURL:@"http://restkit.org"];
     // Override point for customization after application launch.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
@@ -27,7 +30,27 @@
     UINavigationController *masterNavigationController = [splitViewController.viewControllers objectAtIndex:0];
     MasterViewController *controller = (MasterViewController *)masterNavigationController.topViewController;
     controller.managedObjectContext = self.managedObjectContext;
+    
+    //[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(performFakeMemoryWarning) userInfo:nil repeats:YES];
+    
     return YES;
+}
+
+- (void) performFakeMemoryWarning
+{
+   // [[NSNotificationCenter defaultCenter] postNotificationName:UIApplicationDidReceiveMemoryWarningNotification object:[UIApplication sharedApplication] userInfo:nil];
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    if ([[DBSession sharedSession] handleOpenURL:url]) {
+        if ([[DBSession sharedSession] isLinked]) {
+            NSLog(@"App linked successfully!");
+            // At this point you can start making API calls
+        }
+        return YES;
+    }
+    // Add whatever other url handling code your app requires here
+    return NO;
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
